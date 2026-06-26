@@ -1,0 +1,27 @@
+# ── IDE / editor ───────────────────────────────────────────────
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.DS_Store
+
+# ── Backend (Maven) ────────────────────────────────────────────
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+HELP.md
+
+# ── Frontend (Angular/Node) ────────────────────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/coverage/
+npm-debug.log*
+
+# ── Bruno — keep only the importable Postman collection ────────
+bruno/*
+!bruno/thortful-cards.postman_collection.json
+
+# ── Misc ───────────────────────────────────────────────────────
+*.log
+.env
