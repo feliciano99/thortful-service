@@ -29,6 +29,7 @@ server:
   servlet:
     context-path: /${spring.application.name}/v1
   shutdown: graceful
+  forward-headers-strategy: framework
 
 management:
   endpoints:

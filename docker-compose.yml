@@ -6,8 +6,6 @@ services:
       POSTGRES_DB: thortful
       POSTGRES_USER: thortful
       POSTGRES_PASSWORD: thortful
-    ports:
-      - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
@@ -16,6 +14,36 @@ services:
       timeout: 5s
       retries: 10
       start_period: 10s
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+    container_name: thortful-backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/thortful
+      SPRING_DATASOURCE_USERNAME: thortful
+      SPRING_DATASOURCE_PASSWORD: thortful
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/cards/v1/actuator/health | grep -q UP || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: thortful-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      backend:
+        condition: service_healthy
     restart: unless-stopped
 
 volumes:
