@@ -3,13 +3,13 @@ services:
     image: docker.io/library/postgres:17-alpine
     container_name: thortful-postgres
     environment:
-      POSTGRES_DB: thortful
-      POSTGRES_USER: thortful
-      POSTGRES_PASSWORD: thortful
+      POSTGRES_DB: ${POSTGRES_DB:-thortful}
+      POSTGRES_USER: ${POSTGRES_USER:-thortful}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-thortful}
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U thortful -d thortful"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-thortful} -d ${POSTGRES_DB:-thortful}"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -21,9 +21,11 @@ services:
       context: ./backend
     container_name: thortful-backend
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/thortful
-      SPRING_DATASOURCE_USERNAME: thortful
-      SPRING_DATASOURCE_PASSWORD: thortful
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL:-jdbc:postgresql://postgres:5432/thortful}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-thortful}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-thortful}
+      APP_AUTH_USER: ${APP_AUTH_USER:-admin}
+      APP_AUTH_PASSWORD: ${APP_AUTH_PASSWORD:-changeme}
     depends_on:
       postgres:
         condition: service_healthy
