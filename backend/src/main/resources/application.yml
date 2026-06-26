@@ -5,6 +5,10 @@ app:
 spring:
   application:
     name: cards
+  security:
+    user:
+      name: ${APP_AUTH_USER:admin}
+      password: ${APP_AUTH_PASSWORD:admin}
   threads:
     virtual:
       enabled: true
