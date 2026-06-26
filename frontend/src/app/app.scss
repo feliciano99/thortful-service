@@ -10,6 +10,15 @@
   font-weight: 500;
 }
 
+.toolbar .spacer {
+  flex: 1 1 auto;
+}
+
+.toolbar .user {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
 main {
   display: block;
 }

@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -154,11 +155,13 @@ export class CardsList implements OnInit {
           this.total.set(response.page.totalElements);
           this.loading.set(false);
         },
-        error: () => {
+        error: (error: HttpErrorResponse) => {
           this.cards.set([]);
           this.total.set(0);
           this.loading.set(false);
-          this.snackBar.open('Could not load cards.', 'Dismiss', { duration: 4000 });
+          if (error.status !== 401) {
+            this.snackBar.open('Could not load cards.', 'Dismiss', { duration: 4000 });
+          }
         }
       });
   }

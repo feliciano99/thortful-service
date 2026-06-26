@@ -1,6 +1,13 @@
 <mat-toolbar color="primary" class="toolbar">
   <mat-icon>card_giftcard</mat-icon>
   <span class="title">Thortful Greeting Cards</span>
+  <span class="spacer"></span>
+  @if (isAuthenticated()) {
+    <span class="user">{{ username() }}</span>
+    <button mat-icon-button (click)="logout()" aria-label="Sign out">
+      <mat-icon>logout</mat-icon>
+    </button>
+  }
 </mat-toolbar>
 
 <main>
