@@ -1,0 +1,79 @@
+<section class="cards">
+  <div class="filters">
+    <mat-form-field appearance="outline" class="search">
+      <mat-label>Search by title</mat-label>
+      <input matInput [formControl]="searchControl" autocomplete="off" placeholder="e.g. Birthday">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="category">
+      <mat-label>Category</mat-label>
+      <mat-select [formControl]="categoryControl">
+        <mat-option [value]="null">All categories</mat-option>
+        @for (category of categories(); track category.value) {
+          <mat-option [value]="category.value">{{ category.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="progress">
+    @if (loading()) {
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    }
+  </div>
+
+  <div class="table-card">
+    <table mat-table [dataSource]="cards()" matSort matSortActive="title" matSortDirection="asc"
+           matSortDisableClear (matSortChange)="onSort($event)">
+
+      <ng-container matColumnDef="title">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
+        <td mat-cell *matCellDef="let card">{{ card.title }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="category">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Category</th>
+        <td mat-cell *matCellDef="let card">{{ card.category.replaceAll('_', ' ') | titlecase }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="artist">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Artist</th>
+        <td mat-cell *matCellDef="let card">{{ card.artist }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="price">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Price</th>
+        <td mat-cell *matCellDef="let card">{{ card.price | currency:'GBP' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="stockStatus">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Stock</th>
+        <td mat-cell *matCellDef="let card">
+          <span class="stock"
+                [class.in]="card.stockStatus === 'IN_STOCK'"
+                [class.low]="card.stockStatus === 'LOW_STOCK'"
+                [class.out]="card.stockStatus === 'OUT_OF_STOCK'">
+            {{ card.stockStatus.replaceAll('_', ' ') | titlecase }}
+          </span>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+    @if (!loading() && cards().length === 0) {
+      <div class="empty">No cards found.</div>
+    }
+  </div>
+
+  <mat-paginator
+    [length]="total()"
+    [pageSize]="pageSize"
+    [pageIndex]="pageIndex"
+    [pageSizeOptions]="pageSizeOptions"
+    (page)="onPage($event)"
+    showFirstLastButtons>
+  </mat-paginator>
+</section>
