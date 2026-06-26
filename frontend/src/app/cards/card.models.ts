@@ -9,6 +9,14 @@ export interface GreetingCard {
   stockStatus: StockStatus;
 }
 
+export interface CreateCardRequest {
+  title: string;
+  category: string;
+  artist: string;
+  price: number;
+  stockStatus: StockStatus;
+}
+
 export interface CategoryOption {
   value: string;
   label: string;
@@ -33,3 +41,9 @@ export interface CardQuery {
   search?: string;
   category?: string | null;
 }
+
+export const STOCK_STATUS_OPTIONS: { value: StockStatus; label: string }[] = [
+  { value: 'IN_STOCK', label: 'In stock' },
+  { value: 'LOW_STOCK', label: 'Low stock' },
+  { value: 'OUT_OF_STOCK', label: 'Out of stock' }
+];

@@ -18,6 +18,16 @@
   flex: 0 1 240px;
 }
 
+.add-btn {
+  height: 56px;
+  white-space: nowrap;
+}
+
+.mat-column-actions {
+  width: 56px;
+  text-align: right;
+}
+
 .progress {
   min-height: 4px;
   margin-bottom: 8px;

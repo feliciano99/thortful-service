@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { CardQuery, CategoryOption, GreetingCard, PagedResponse } from './card.models';
+import { CardQuery, CategoryOption, CreateCardRequest, GreetingCard, PagedResponse } from './card.models';
 
 @Injectable({ providedIn: 'root' })
 export class CardService {
@@ -24,5 +24,13 @@ export class CardService {
 
   getCategories(): Observable<CategoryOption[]> {
     return this.http.get<CategoryOption[]>(`${this.baseUrl}/categories`);
+  }
+
+  create(request: CreateCardRequest): Observable<GreetingCard> {
+    return this.http.post<GreetingCard>(`${this.baseUrl}/cards`, request);
+  }
+
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/cards/${id}`);
   }
 }

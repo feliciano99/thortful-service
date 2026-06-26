@@ -1,0 +1,69 @@
+<h2 mat-dialog-title>Add greeting card</h2>
+
+@if (saving()) {
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+}
+
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <mat-dialog-content class="form-content">
+    <mat-form-field appearance="outline">
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="title" maxlength="200" autocomplete="off">
+      @if (form.controls.title.hasError('required')) {
+        <mat-error>Title is required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Category</mat-label>
+      <mat-select formControlName="category">
+        @for (category of data.categories; track category.value) {
+          <mat-option [value]="category.value">{{ category.label }}</mat-option>
+        }
+      </mat-select>
+      @if (form.controls.category.hasError('required')) {
+        <mat-error>Category is required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Artist</mat-label>
+      <input matInput formControlName="artist" maxlength="150" autocomplete="off">
+      @if (form.controls.artist.hasError('required')) {
+        <mat-error>Artist is required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Price (£)</mat-label>
+      <input matInput type="number" formControlName="price" min="0.01" step="0.01">
+      @if (form.controls.price.hasError('required')) {
+        <mat-error>Price is required</mat-error>
+      }
+      @if (form.controls.price.hasError('min')) {
+        <mat-error>Price must be greater than 0</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Stock status</mat-label>
+      <mat-select formControlName="stockStatus">
+        @for (option of stockOptions; track option.value) {
+          <mat-option [value]="option.value">{{ option.label }}</mat-option>
+        }
+      </mat-select>
+      @if (form.controls.stockStatus.hasError('required')) {
+        <mat-error>Stock status is required</mat-error>
+      }
+    </mat-form-field>
+
+    @if (serverError()) {
+      <p class="server-error">{{ serverError() }}</p>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" [disabled]="saving()" (click)="cancel()">Cancel</button>
+    <button mat-flat-button color="primary" type="submit" [disabled]="saving()">Add card</button>
+  </mat-dialog-actions>
+</form>

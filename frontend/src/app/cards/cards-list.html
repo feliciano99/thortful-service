@@ -15,6 +15,11 @@
         }
       </mat-select>
     </mat-form-field>
+
+    <button mat-flat-button color="primary" class="add-btn" (click)="openCreateDialog()">
+      <mat-icon>add</mat-icon>
+      Add card
+    </button>
   </div>
 
   <div class="progress">
@@ -56,6 +61,16 @@
                 [class.out]="card.stockStatus === 'OUT_OF_STOCK'">
             {{ card.stockStatus.replaceAll('_', ' ') | titlecase }}
           </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef aria-label="Actions"></th>
+        <td mat-cell *matCellDef="let card">
+          <button mat-icon-button color="warn" (click)="confirmDelete(card)"
+                  [attr.aria-label]="'Delete ' + card.title">
+            <mat-icon>delete</mat-icon>
+          </button>
         </td>
       </ng-container>
 
