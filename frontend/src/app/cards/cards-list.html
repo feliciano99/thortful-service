@@ -1,8 +1,8 @@
 <section class="cards">
   <div class="filters">
     <mat-form-field appearance="outline" class="search">
-      <mat-label>Search by title</mat-label>
-      <input matInput [formControl]="searchControl" autocomplete="off" placeholder="e.g. Birthday">
+      <mat-label>Search title or artist</mat-label>
+      <input matInput [formControl]="searchControl" autocomplete="off" placeholder="e.g. Birthday or an artist">
       <mat-icon matSuffix>search</mat-icon>
     </mat-form-field>
 
@@ -12,6 +12,16 @@
         <mat-option [value]="null">All categories</mat-option>
         @for (category of categories(); track category.value) {
           <mat-option [value]="category.value">{{ category.label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="stock">
+      <mat-label>Stock</mat-label>
+      <mat-select [formControl]="stockControl">
+        <mat-option [value]="null">All stock</mat-option>
+        @for (option of stockOptions; track option.value) {
+          <mat-option [value]="option.value">{{ option.label }}</mat-option>
         }
       </mat-select>
     </mat-form-field>

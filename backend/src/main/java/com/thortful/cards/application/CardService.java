@@ -3,6 +3,7 @@ package com.thortful.cards.application;
 import com.thortful.cards.domain.CardNotFoundException;
 import com.thortful.cards.domain.Category;
 import com.thortful.cards.domain.GreetingCard;
+import com.thortful.cards.domain.StockStatus;
 import com.thortful.cards.infrastructure.persistence.GreetingCardRepository;
 import com.thortful.cards.infrastructure.persistence.GreetingCardSpecifications;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +21,8 @@ public class CardService {
     private final CardMapper mapper;
 
     @Transactional(readOnly = true)
-    public Page<GreetingCardResponse> search(String search, Category category, Pageable pageable) {
-        Specification<GreetingCard> specification = GreetingCardSpecifications.filter(search, category);
+    public Page<GreetingCardResponse> search(String search, Category category, StockStatus stockStatus, Pageable pageable) {
+        Specification<GreetingCard> specification = GreetingCardSpecifications.filter(search, category, stockStatus);
         return repository.findAll(specification, pageable).map(mapper::toResponse);
     }
 

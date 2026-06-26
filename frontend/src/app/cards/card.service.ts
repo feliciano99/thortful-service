@@ -19,6 +19,9 @@ export class CardService {
     if (query.category) {
       params = params.set('category', query.category);
     }
+    if (query.stockStatus) {
+      params = params.set('stockStatus', query.stockStatus);
+    }
     return this.http.get<PagedResponse<GreetingCard>>(`${this.baseUrl}/cards`, { params });
   }
 

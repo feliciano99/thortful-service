@@ -48,7 +48,7 @@ class CardServiceTest {
                 .thenReturn(new PageImpl<>(List.of(card), pageable, 1));
         when(mapper.toResponse(card)).thenReturn(response);
 
-        Page<GreetingCardResponse> result = service.search("birthday", Category.BIRTHDAY, pageable);
+        Page<GreetingCardResponse> result = service.search("birthday", Category.BIRTHDAY, StockStatus.IN_STOCK, pageable);
 
         assertThat(result.getContent()).containsExactly(response);
         assertThat(result.getTotalElements()).isEqualTo(1);

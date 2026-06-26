@@ -18,8 +18,10 @@ describe('CardService', () => {
 
   afterEach(() => http.verify());
 
-  it('sends paging, sort, search and category params', () => {
-    service.search({ page: 1, size: 10, sort: 'title,asc', search: 'cat', category: 'BIRTHDAY' }).subscribe();
+  it('sends paging, sort, search, category and stock params', () => {
+    service
+      .search({ page: 1, size: 10, sort: 'title,asc', search: 'cat', category: 'BIRTHDAY', stockStatus: 'IN_STOCK' })
+      .subscribe();
 
     const req = http.expectOne((r) => r.url === '/cards/v1/cards');
     expect(req.request.params.get('page')).toBe('1');
@@ -27,15 +29,17 @@ describe('CardService', () => {
     expect(req.request.params.get('sort')).toBe('title,asc');
     expect(req.request.params.get('search')).toBe('cat');
     expect(req.request.params.get('category')).toBe('BIRTHDAY');
+    expect(req.request.params.get('stockStatus')).toBe('IN_STOCK');
     req.flush({ content: [], page: { size: 10, number: 1, totalElements: 0, totalPages: 0 } });
   });
 
-  it('omits search and category when not provided', () => {
+  it('omits search, category and stock when not provided', () => {
     service.search({ page: 0, size: 20, sort: 'title,asc' }).subscribe();
 
     const req = http.expectOne((r) => r.url === '/cards/v1/cards');
     expect(req.request.params.has('search')).toBe(false);
     expect(req.request.params.has('category')).toBe(false);
+    expect(req.request.params.has('stockStatus')).toBe(false);
     req.flush({ content: [], page: { size: 20, number: 0, totalElements: 0, totalPages: 0 } });
   });
 

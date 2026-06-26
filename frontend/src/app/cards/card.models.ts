@@ -40,6 +40,7 @@ export interface CardQuery {
   sort: string;
   search?: string;
   category?: string | null;
+  stockStatus?: string | null;
 }
 
 export const STOCK_STATUS_OPTIONS: { value: StockStatus; label: string }[] = [

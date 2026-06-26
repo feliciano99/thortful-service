@@ -4,6 +4,7 @@ import com.thortful.cards.application.CardService;
 import com.thortful.cards.application.CreateCardRequest;
 import com.thortful.cards.application.GreetingCardResponse;
 import com.thortful.cards.domain.Category;
+import com.thortful.cards.domain.StockStatus;
 import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
@@ -32,8 +33,9 @@ public class CardController {
     public PagedModel<GreetingCardResponse> list(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) Category category,
+            @RequestParam(required = false) StockStatus stockStatus,
             Pageable pageable) {
-        Page<GreetingCardResponse> page = cardService.search(search, category, pageable);
+        Page<GreetingCardResponse> page = cardService.search(search, category, stockStatus, pageable);
         return new PagedModel<>(page);
     }
 

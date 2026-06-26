@@ -16,7 +16,7 @@ import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { CardFormDialog } from './card-form-dialog';
-import { CategoryOption, GreetingCard } from './card.models';
+import { CategoryOption, GreetingCard, STOCK_STATUS_OPTIONS } from './card.models';
 import { CardService } from './card.service';
 import { ConfirmDialog } from './confirm-dialog';
 
@@ -54,6 +54,8 @@ export class CardsList implements OnInit {
 
   protected readonly searchControl = new FormControl('');
   protected readonly categoryControl = new FormControl<string | null>(null);
+  protected readonly stockControl = new FormControl<string | null>(null);
+  protected readonly stockOptions = STOCK_STATUS_OPTIONS;
 
   protected readonly pageSizeOptions = [10, 20, 50, 100];
   protected pageIndex = 0;
@@ -71,6 +73,10 @@ export class CardsList implements OnInit {
       .subscribe(() => this.reload());
 
     this.categoryControl.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.reload());
+
+    this.stockControl.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.reload());
 
@@ -146,7 +152,8 @@ export class CardsList implements OnInit {
       size: this.pageSize,
       sort: `${this.sortActive},${this.sortDirection}`,
       search: this.searchControl.value ?? undefined,
-      category: this.categoryControl.value
+      category: this.categoryControl.value,
+      stockStatus: this.stockControl.value
     })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({

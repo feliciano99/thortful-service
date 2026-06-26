@@ -25,7 +25,7 @@ test.describe('Greeting cards management', () => {
     await dialog.getByRole('button', { name: 'Add card' }).click();
     await expect(dialog).toBeHidden();
 
-    await page.getByLabel('Search by title').fill(title);
+    await page.getByLabel('Search title or artist').fill(title);
     const row = page.locator('table tbody tr', { hasText: title });
     await expect(row).toHaveCount(1);
 

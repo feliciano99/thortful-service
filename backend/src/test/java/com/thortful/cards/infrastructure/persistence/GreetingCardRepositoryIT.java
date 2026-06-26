@@ -11,8 +11,8 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,16 +29,16 @@ class GreetingCardRepositoryIT {
     @BeforeEach
     void seed() {
         repository.saveAll(List.of(
-                card("Happy Birthday", Category.BIRTHDAY),
-                card("Birthday Bash", Category.BIRTHDAY),
-                card("Get Well Soon", Category.GET_WELL)
+                card("Happy Birthday", Category.BIRTHDAY, "Alice Painter", StockStatus.IN_STOCK),
+                card("Birthday Bash", Category.BIRTHDAY, "Bob Draws", StockStatus.LOW_STOCK),
+                card("Get Well Soon", Category.GET_WELL, "Carol Inkwell", StockStatus.OUT_OF_STOCK)
         ));
     }
 
     @Test
     void filtersByCategory() {
         Page<GreetingCard> page =
-                repository.findAll(GreetingCardSpecifications.filter(null, Category.BIRTHDAY), PageRequest.of(0, 10));
+                repository.findAll(GreetingCardSpecifications.filter(null, Category.BIRTHDAY, null), PageRequest.of(0, 10));
 
         assertThat(page.getTotalElements()).isEqualTo(2);
         assertThat(page.getContent()).allMatch(card -> card.getCategory() == Category.BIRTHDAY);
@@ -47,7 +47,7 @@ class GreetingCardRepositoryIT {
     @Test
     void searchesTitleCaseInsensitive() {
         Page<GreetingCard> page =
-                repository.findAll(GreetingCardSpecifications.filter("BIRTHDAY", null), PageRequest.of(0, 10));
+                repository.findAll(GreetingCardSpecifications.filter("BIRTHDAY", null, null), PageRequest.of(0, 10));
 
         assertThat(page.getContent())
                 .extracting(GreetingCard::getTitle)
@@ -55,9 +55,29 @@ class GreetingCardRepositoryIT {
     }
 
     @Test
+    void searchesByArtist() {
+        Page<GreetingCard> page =
+                repository.findAll(GreetingCardSpecifications.filter("inkwell", null, null), PageRequest.of(0, 10));
+
+        assertThat(page.getContent())
+                .extracting(GreetingCard::getTitle)
+                .containsExactly("Get Well Soon");
+    }
+
+    @Test
+    void filtersByStockStatus() {
+        Page<GreetingCard> page = repository.findAll(
+                GreetingCardSpecifications.filter(null, null, StockStatus.OUT_OF_STOCK), PageRequest.of(0, 10));
+
+        assertThat(page.getContent())
+                .extracting(GreetingCard::getStockStatus)
+                .containsExactly(StockStatus.OUT_OF_STOCK);
+    }
+
+    @Test
     void paginatesAndSorts() {
         Page<GreetingCard> page = repository.findAll(
-                GreetingCardSpecifications.filter(null, null), PageRequest.of(0, 2, Sort.by("title")));
+                GreetingCardSpecifications.filter(null, null, null), PageRequest.of(0, 2, Sort.by("title")));
 
         assertThat(page.getTotalElements()).isEqualTo(3);
         assertThat(page.getTotalPages()).isEqualTo(2);
@@ -65,13 +85,13 @@ class GreetingCardRepositoryIT {
         assertThat(page.getContent().getFirst().getTitle()).isEqualTo("Birthday Bash");
     }
 
-    private static GreetingCard card(String title, Category category) {
+    private static GreetingCard card(String title, Category category, String artist, StockStatus stockStatus) {
         return GreetingCard.builder()
                 .title(title)
                 .category(category)
-                .artist("Test Artist")
+                .artist(artist)
                 .price(BigDecimal.valueOf(4.50))
-                .stockStatus(StockStatus.IN_STOCK)
+                .stockStatus(stockStatus)
                 .build();
     }
 }
