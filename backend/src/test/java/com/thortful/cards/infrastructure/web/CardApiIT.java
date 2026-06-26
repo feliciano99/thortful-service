@@ -15,6 +15,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,6 +36,12 @@ class CardApiIT {
 
     @Value("${server.servlet.context-path}")
     private String contextPath;
+
+    @Value("${spring.security.user.name}")
+    private String authUser;
+
+    @Value("${spring.security.user.password}")
+    private String authPassword;
 
     private final HttpClient http = HttpClient.newHttpClient();
 
@@ -84,21 +92,40 @@ class CardApiIT {
         assertThat(categories).hasSize(Category.values().length);
     }
 
+    @Test
+    void rejectsUnauthenticatedRequests() throws Exception {
+        HttpResponse<String> response = http.send(
+                HttpRequest.newBuilder(uri("/cards")).GET().build(),
+                HttpResponse.BodyHandlers.ofString());
+
+        assertThat(response.statusCode()).isEqualTo(401);
+    }
+
     private URI uri(String path) {
         return URI.create("http://localhost:" + port + contextPath + path);
     }
 
+    private String authHeader() {
+        return "Basic " + Base64.getEncoder()
+                .encodeToString((authUser + ":" + authPassword).getBytes(StandardCharsets.UTF_8));
+    }
+
     private HttpResponse<String> get(String path) throws Exception {
-        return http.send(HttpRequest.newBuilder(uri(path)).GET().build(), HttpResponse.BodyHandlers.ofString());
+        return http.send(
+                HttpRequest.newBuilder(uri(path)).header("Authorization", authHeader()).GET().build(),
+                HttpResponse.BodyHandlers.ofString());
     }
 
     private HttpResponse<String> delete(String path) throws Exception {
-        return http.send(HttpRequest.newBuilder(uri(path)).DELETE().build(), HttpResponse.BodyHandlers.ofString());
+        return http.send(
+                HttpRequest.newBuilder(uri(path)).header("Authorization", authHeader()).DELETE().build(),
+                HttpResponse.BodyHandlers.ofString());
     }
 
     private HttpResponse<String> post(String path, Object payload) throws Exception {
         return http.send(
                 HttpRequest.newBuilder(uri(path))
+                        .header("Authorization", authHeader())
                         .header("Content-Type", "application/json")
                         .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(payload)))
                         .build(),
