@@ -22,6 +22,8 @@ spring:
         one-indexed-parameters: false
 
 server:
+  servlet:
+    context-path: /${spring.application.name}/v1
   shutdown: graceful
 
 management:
