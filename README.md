@@ -178,16 +178,60 @@ cd backend
 - Integration: repository search/paging (`@DataJpaTest` + Testcontainers Postgres) and the full API
   (`@SpringBootTest`, authenticated, incl. a 401 check).
 
-**Frontend E2E** (Playwright) — against a running stack:
+**Frontend unit** (Vitest via the Angular `unit-test` builder):
 
 ```bash
 cd frontend
 npm ci
+npm run test            # watch mode
+npm run test:coverage   # single run + lcov coverage report
+```
+
+- Specs for `CardService` (params/CRUD), `AuthService` (login/logout/storage), the
+  `authInterceptor` (token attach + 401 redirect), `ThemeService`, and the app shell.
+
+**Frontend E2E** (Playwright) — against a running stack:
+
+```bash
+cd frontend
 npx playwright install --with-deps chromium
 E2E_BASE_URL=http://localhost:8080 npm run e2e
 ```
 
 Covers server‑side pagination, the full create → search → delete workflow, and add‑form validation.
+
+---
+
+## Code quality & coverage (JaCoCo + Sonar)
+
+**Coverage** — both languages produce coverage Sonar consumes:
+- **Backend** — JaCoCo instruments both test phases: `./mvnw verify` writes
+  `backend/target/site/jacoco/jacoco.xml` (unit) + `.../jacoco-it/jacoco.xml` (integration).
+- **Frontend** — `npm run test:coverage` writes `frontend/coverage/frontend/lcov.info`.
+
+**Static analysis & security hotspots** — one analysis covers **both** Java and TypeScript: the
+backend `pom.xml` sets `sonar.sources` to include `../frontend/src`, and points at both the JaCoCo
+XML and the frontend lcov. SonarQube/SonarCloud then reports bugs, code smells, **security hotspots**,
+and merged coverage across the whole repo.
+
+Generate the reports, then run Sonar — easiest path **SonarCloud** (free for public repos):
+```bash
+( cd frontend && npm ci && npm run test:coverage )      # frontend lcov
+( cd backend  && ./mvnw verify )                        # backend jacoco
+cd backend && ./mvnw sonar:sonar \
+  -Dsonar.host.url=https://sonarcloud.io \
+  -Dsonar.organization=<your-org> \
+  -Dsonar.token=<your-token>
+```
+
+Or a **local SonarQube** (compose provided):
+```bash
+podman compose -f docker-compose.sonar.yml up -d      # http://localhost:9000 (admin/admin)
+# create a token in the UI, then (after generating the reports above):
+cd backend && ./mvnw sonar:sonar -Dsonar.host.url=http://localhost:9000 -Dsonar.token=<TOKEN>
+```
+(The local server needs `vm.max_map_count >= 262144` for its embedded Elasticsearch — see the header
+of `docker-compose.sonar.yml`.)
 
 ---
 

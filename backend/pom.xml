@@ -19,6 +19,16 @@
 		<datafaker.version>2.4.3</datafaker.version>
 		<mapstruct.version>1.6.3</mapstruct.version>
 		<lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
+
+		<sonar.projectKey>thortful-cards</sonar.projectKey>
+		<sonar.projectName>Thortful Cards</sonar.projectName>
+		<sonar.sources>${project.basedir}/src/main/java,${project.basedir}/../frontend/src</sonar.sources>
+		<sonar.tests>${project.basedir}/src/test/java,${project.basedir}/../frontend/src</sonar.tests>
+		<sonar.test.inclusions>**/*.spec.ts,**/*Test.java,**/*IT.java</sonar.test.inclusions>
+		<sonar.exclusions>**/node_modules/**,**/dist/**</sonar.exclusions>
+		<sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml,${project.build.directory}/site/jacoco-it/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+		<sonar.javascript.lcov.reportPaths>${project.basedir}/../frontend/coverage/frontend/lcov.info</sonar.javascript.lcov.reportPaths>
+		<sonar.junit.reportPaths>${project.build.directory}/surefire-reports,${project.build.directory}/failsafe-reports</sonar.junit.reportPaths>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -166,7 +176,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
-					<argLine>-javaagent:${org.mockito:mockito-core:jar} -Xshare:off</argLine>
+					<argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar} -Xshare:off</argLine>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -174,12 +184,48 @@
 				<artifactId>maven-failsafe-plugin</artifactId>
 				<configuration>
 					<reuseForks>false</reuseForks>
+					<argLine>@{failsafeArgLine}</argLine>
 				</configuration>
 				<executions>
 					<execution>
 						<goals>
 							<goal>integration-test</goal>
 							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>prepare-unit</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report-unit</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>prepare-integration</id>
+						<goals>
+							<goal>prepare-agent-integration</goal>
+						</goals>
+						<configuration>
+							<propertyName>failsafeArgLine</propertyName>
+						</configuration>
+					</execution>
+					<execution>
+						<id>report-integration</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>report-integration</goal>
 						</goals>
 					</execution>
 				</executions>
