@@ -1,3 +1,7 @@
+app:
+  seeding:
+    enabled: true
+
 spring:
   application:
     name: cards

@@ -14,11 +14,13 @@ import net.datafaker.Faker;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @NullMarked
 @Component
+@ConditionalOnProperty(prefix = "app.seeding", name = "enabled", havingValue = "true", matchIfMissing = true)
 @RequiredArgsConstructor
 public class DataSeeder implements ApplicationRunner {
 

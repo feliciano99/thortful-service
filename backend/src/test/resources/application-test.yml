@@ -1,0 +1,3 @@
+app:
+  seeding:
+    enabled: false
