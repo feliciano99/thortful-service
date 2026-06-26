@@ -30,8 +30,9 @@ public class GreetingCard {
     @Column(nullable = false, length = 200)
     private String title;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 100)
-    private String category;
+    private Category category;
 
     @Column(nullable = false, length = 150)
     private String artist;
